@@ -2,6 +2,11 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.utils.text import slugify
+from PIL import Image
+from io import BytesIO
+from django.core.files.uploadedfile import InMemoryUploadedFile
+
+
 
 User = get_user_model()
 
@@ -27,4 +32,21 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
+
+        # Compress the image
+        if self.image:
+            img = Image.open(self.image)
+            output = BytesIO()
+            
+            # Resize/modify the image if necessary
+            img = img.convert('RGB')  # Convert image to RGB color space if necessary
+            img.save(output, format='JPEG', quality=85)  # Adjust quality as needed
+            
+            output.seek(0)
+            self.image = InMemoryUploadedFile(output, 'ImageField', 
+                                              f"{self.image.name.split('.')[0]}.jpg", 
+                                              'image/jpeg', 
+                                              output.tell, 
+                                              None)
+
         super().save(*args, **kwargs)
