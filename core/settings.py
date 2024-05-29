@@ -20,6 +20,7 @@ ALLOWED_HOSTS = [
    'localhost',
    '127.0.0.1',
    'blog-app-frontend-fridah.netlify.app',
+   "blog-app-backend-c0fs.onrender.com"
 ]
 
 # Application definition
